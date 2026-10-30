@@ -1,0 +1,18 @@
+{
+  "name": "AI Smart Scanner BD",
+  "short_name": "Smart Scanner",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f3f6fb",
+  "theme_color": "#102a56",
+  "description": "ছবি থেকে পণ্য শনাক্ত, আনুমানিক দাম ও খাবারের পুষ্টি বিশ্লেষণ।",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

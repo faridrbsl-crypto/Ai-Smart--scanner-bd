@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#102a56">
+  <meta name="description" content="AI Smart Scanner BD — ছবি থেকে পণ্য শনাক্ত, আনুমানিক দাম ও খাবারের পুষ্টি বিশ্লেষণ।">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <title>AI Smart Scanner BD</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif;color:#17243b;background:#f3f6fb}
+    *{box-sizing:border-box}body{margin:0}.wrap{max-width:760px;margin:auto;padding:18px 15px 40px}
+    header{background:linear-gradient(135deg,#102a56,#1769aa);color:white;padding:25px 20px 30px;border-radius:0 0 25px 25px}
+    header h1{margin:0;font-size:25px}header p{margin:8px 0 0;color:#e0edff}
+    .card{background:white;border:1px solid #e4eaf2;border-radius:18px;padding:17px;margin-top:15px;box-shadow:0 6px 22px #142b4d0b}
+    .tabs{display:flex;gap:8px}.tab{flex:1;border:1px solid #d5dfed;background:#f7f9fc;padding:12px;border-radius:12px;font-weight:700;color:#263b5b}
+    .tab.active{background:#e8f2ff;border-color:#3983d5;color:#0755a0}
+    label{display:block;font-weight:700;margin:12px 0 7px}
+    input,select{width:100%;padding:12px;border:1px solid #ccd7e5;border-radius:11px;font:inherit;background:white}
+    input[type=file]{padding:10px}
+    button{border:0;border-radius:12px;padding:13px 16px;font:inherit;font-weight:700;cursor:pointer}
+    .primary{width:100%;background:#1266b3;color:white;margin-top:14px}.primary:disabled{opacity:.55;cursor:wait}
+    .preview{display:none;width:100%;max-height:330px;object-fit:contain;background:#f0f3f8;border-radius:13px;margin-top:12px}
+    .hint{font-size:13px;color:#61718a;line-height:1.55}.status{margin-top:12px;color:#315a84}
+    .result{white-space:pre-wrap;line-height:1.7;overflow-wrap:anywhere}.error{color:#b42318}
+    footer{text-align:center;color:#6d7b90;font-size:12px;padding:20px}
+    .install{display:none;background:#eaf4ff;color:#14558e;width:100%;margin-top:10px}
+    @media(min-width:600px){.wrap{padding-top:25px}header{margin:0 auto;max-width:760px}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="padding:0">
+    <h1>🔎 AI Smart Scanner BD</h1>
+    <p>ছবি তুলুন — পণ্য চিনুন, দাম জানুন, খাবারের পুষ্টি বুঝুন।</p>
+  </div>
+</header>
+<main class="wrap">
+  <section class="card">
+    <div class="tabs">
+      <button class="tab active" id="foodTab" type="button">🍎 খাবার বিশ্লেষণ</button>
+      <button class="tab" id="productTab" type="button">🛍️ পণ্যের দাম</button>
+    </div>
+    <label for="language">ভাষা / Language</label>
+    <select id="language"><option value="bn">বাংলা</option><option value="en">English</option></select>
+    <label for="photo">ছবি তুলুন অথবা গ্যালারি থেকে বাছুন</label>
+    <input id="photo" type="file" accept="image/*" capture="environment">
+    <img id="preview" class="preview" alt="আপনার নির্বাচিত ছবির প্রিভিউ">
+    <label for="extra">অতিরিক্ত তথ্য (ঐচ্ছিক)</label>
+    <input id="extra" maxlength="300" placeholder="যেমন: খাবারের পরিমাণ, পণ্যের ব্র্যান্ড/মডেল">
+    <p class="hint" id="hint">খাবারের নাম, আনুমানিক ক্যালরি, প্রোটিন, কার্বোহাইড্রেট, ফ্যাট ও অন্যান্য পুষ্টি সম্পর্কে ধারণা পাবেন।</p>
+    <button class="primary" id="scanBtn" type="button">ছবি বিশ্লেষণ করুন</button>
+    <button class="install" id="installBtn" type="button">📲 Android-এ অ্যাপ ইনস্টল করুন</button>
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+  </section>
+  <section class="card" id="resultCard" hidden>
+    <h2 style="margin:0 0 10px">বিশ্লেষণের ফলাফল</h2>
+    <div class="result" id="result"></div>
+  </section>
+  <section class="card">
+    <b>গুরুত্বপূর্ণ তথ্য</b>
+    <p class="hint">AI ছবির ভিত্তিতে অনুমান করে। খাবারের পুষ্টিমান পরিমাণ ও রান্নার পদ্ধতিতে বদলায়। পণ্যের দাম মডেল, অবস্থা, স্থান ও সময় অনুযায়ী বদলায়; লাইভ দোকানদর যাচাই না হলে দামটি আনুমানিক হিসেবে ধরুন। স্বাস্থ্য বা কেনাকাটার চূড়ান্ত সিদ্ধান্তের আগে নির্ভরযোগ্য উৎসে যাচাই করুন।</p>
+  </section>
+  <footer>AI Smart Scanner BD · Powered by AI</footer>
+</main>
+<script>
+let mode = "food";
+const $ = id => document.getElementById(id);
+const foodTab=$("foodTab"), productTab=$("productTab"), photo=$("photo"), preview=$("preview");
+foodTab.onclick=()=>setMode("food"); productTab.onclick=()=>setMode("product");
+function setMode(m){
+  mode=m; foodTab.classList.toggle("active",m==="food"); productTab.classList.toggle("active",m==="product");
+  $("hint").textContent=m==="food"
+    ?"খাবারের নাম, আনুমানিক ক্যালরি, প্রোটিন, কার্বোহাইড্রেট, ফ্যাট ও অন্যান্য পুষ্টি সম্পর্কে ধারণা পাবেন।"
+    :"পণ্যের নাম, সম্ভাব্য ব্র্যান্ড/মডেল, অবস্থা এবং বাংলাদেশি টাকায় সতর্কতাসহ আনুমানিক মূল্য পাবেন।";
+  $("extra").placeholder=m==="food"?"যেমন: ১ কাপ ভাত, ১ টুকরা মাছ":"যেমন: ব্র্যান্ড, মডেল, নতুন/পুরোনো, শহর";
+}
+photo.addEventListener("change",()=>{
+  const f=photo.files[0]; if(!f){preview.style.display="none";return;}
+  if(f.size>8*1024*1024){$("status").textContent="ছবিটি ৮ MB-এর বেশি। ছোট ছবি নির্বাচন করুন।";photo.value="";return;}
+  preview.src=URL.createObjectURL(f);preview.style.display="block";$("status").textContent="";
+});
+$("scanBtn").onclick=async()=>{
+  const f=photo.files[0]; if(!f){$("status").textContent="আগে একটি ছবি তুলুন বা নির্বাচন করুন।";return;}
+  const btn=$("scanBtn");btn.disabled=true;btn.textContent="বিশ্লেষণ হচ্ছে…";$("status").textContent="ছবিটি নিরাপদ সার্ভারে পাঠানো হচ্ছে…";$("resultCard").hidden=true;
+  try{
+    const dataUrl=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(f)});
+    const res=await fetch("/api/scan",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:dataUrl,mode,language:$("language").value,extra:$("extra").value})});
+    const data=await res.json(); if(!res.ok) throw new Error(data.error||"বিশ্লেষণ করা যায়নি।");
+    $("result").textContent=data.result||"কোনো ফলাফল পাওয়া যায়নি।";$("resultCard").hidden=false;$("status").textContent="বিশ্লেষণ সম্পন্ন।";
+  }catch(e){$("status").textContent=e.message+" Netlify-তে API key ও Function সেটিংস পরীক্ষা করুন।";$("status").className="status error";}
+  finally{btn.disabled=false;btn.textContent="ছবি বিশ্লেষণ করুন";}
+};
+let installPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;$("installBtn").style.display="block"});
+$("installBtn").onclick=async()=>{if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$("installBtn").style.display="none"}else alert("Chrome-এর মেনু (⋮) খুলে Add to Home screen / Install app নির্বাচন করুন।")};
+if("serviceWorker" in navigator) window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
